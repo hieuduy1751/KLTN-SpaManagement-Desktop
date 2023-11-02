@@ -1,0 +1,29 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+button,
+[type='button'],
+[type='reset'],
+[type='submit'] {
+  -webkit-appearance: button; /* 1 */
+  background-color: transparent; /* 2 */
+  background-image: none; /* 2 */
+}
+
+/* => */
+
+button:where(:not([class^='ant'])),
+[type='button']:where(:not([class^='ant'])),
+[type='reset']:where(:not([class^='ant'])),
+[type='submit']:where(:not([class^='ant'])) {
+  -webkit-appearance: button; /* 1 */
+  background-color: transparent; /* 2 */
+  background-image: none; /* 2 */
+}
+
+:where([class^='ant']) a {
+  /* colorPrimary */
+  color: #1677ff;
+  text-decoration: none;
+}
