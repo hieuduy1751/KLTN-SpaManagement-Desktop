@@ -3,7 +3,7 @@ import { Navigate } from "react-router-dom";
 
 const Logout: React.FC = () => {
   useEffect(() => {
-    localStorage.removeItem("accessToken");
+    localStorage.removeItem("token");
   }, []);
 
   return <Navigate to="/auth/login" replace />;
