@@ -1,11 +1,17 @@
 import userReducer from "./userSlice";
 import authReducer from "./authSlice";
 import usersReducer from "./usersSlice";
-import notificationsReducer from "./notificationsSlice";
+import customersReducer from "./customerSlice";
+import staffsReducer from "./staffSlice";
+import servicesSlice from "./serviceSlice";
+import productsSlice from './productSlice'
 
 export default {
   user: userReducer,
   auth: authReducer,
   users: usersReducer,
-  notifications: notificationsReducer,
+  customers: customersReducer,
+  staffs: staffsReducer,
+  services: servicesSlice,
+  products: productsSlice
 };

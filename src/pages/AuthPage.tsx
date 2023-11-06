@@ -1,131 +1,118 @@
 import { useState } from "react";
-import { Spin } from "antd";
+import { Button, Checkbox, Form, Input, Spin, Typography } from "antd";
 import { useNavigate } from "react-router-dom";
 import { useAppDispatch } from "../hooks/reduxHooks";
 import { doLogin } from "../store/slices/authSlice";
-import { adminSignUp } from "../services/admin.service";
-import { message } from "antd";
+import { LoadingOutlined } from "@ant-design/icons";
+import SpaLogo from "../assets/spa_logo.png";
+
+type FieldType = {
+  username?: string;
+  password?: string;
+  remember?: string;
+};
 
 export default function AuthPage() {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const [email, setEmail] = useState("");
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-  const [isSigningUp, setIsSigningUp] = useState(false);
-  const [messageApi, contextHolder] = message.useMessage();
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const formSubmit = async (e: any) => {
+  const onFinish = (formValues: any) => {
     setErrorMessage("");
     setLoading(true);
-    e.preventDefault();
-    if (!isSigningUp) {
-      dispatch(
-        doLogin({
-          email,
-          password,
-        })
-      )
-        .unwrap()
-        .then(() => navigate("/home/accounts"))
-        .catch((err) => {
-          setErrorMessage(err.message);
-          setLoading(false);
-        });
-    } else {
-      if (confirmPassword !== password) {
-        setErrorMessage("Password doesn't match");
-      } else {
-        if (
-          await adminSignUp({
-            username,
-            password,
-            confirmPassword,
-            email,
-          })
-        ) {
-          messageApi.open({
-            type: "success",
-            content: "Sign Up successfully",
-          });
-          setIsSigningUp(false)
-          setLoading(false)
-        } else {
-          messageApi.open({
-            type: "error",
-            content: "Sign Up failed!",
-          });
-          setLoading(false)
-        }
-      }
-    }
+    dispatch(
+      doLogin({
+        username: formValues.username,
+        password: formValues.password,
+      })
+    )
+      .unwrap()
+      .then(() => {
+        navigate("/home/dashboard");
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.log(err.message);
+        setErrorMessage(err.message);
+        setLoading(false)
+      });
   };
-
-  const handleSwitchMode = () => {
-    setIsSigningUp((prev) => !prev);
+  const onFinishFailed = (errorInfo: any) => {
+    console.log("failed", errorInfo);
   };
 
   return (
     <div className="w-full h-[100vh] flex justify-center items-center">
-      {contextHolder}
-      <div className="w-50">
-        <h4 className="text-4xl font-bold mb-4">
-          {isSigningUp ? "Sign Up" : "Login"}
-        </h4>
-        <form className="flex flex-col gap-4" onSubmit={formSubmit}>
-          {isSigningUp && (
-            <input
-              type="text"
-              placeholder="Username"
-              className="border border-gray-300 p-2 rounded-md"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-            />
+      <div className="w-96">
+        <div className="flex justify-center">
+          <img src={SpaLogo} alt="spa logo" className="w-48" />
+        </div>
+        <h4 className="text-4xl font-bold mb-4">Đăng nhập</h4>
+        <Form
+          name="basic"
+          labelCol={{ span: 8 }}
+          wrapperCol={{ span: 16 }}
+          style={{ maxWidth: 600 }}
+          initialValues={{ remember: true }}
+          onFinish={onFinish}
+          onFinishFailed={onFinishFailed}
+          autoComplete="off"
+        >
+          <Form.Item<FieldType>
+            label="Tên đăng nhập"
+            name="username"
+            rules={[
+              {
+                required: true,
+                message: "Tên đăng nhập không được để trống !",
+              },
+            ]}
+          >
+            <Input />
+          </Form.Item>
+
+          <Form.Item<FieldType>
+            label="Mật khẩu"
+            name="password"
+            rules={[
+              { required: true, message: "Mật khẩu không được để trống !" },
+            ]}
+          >
+            <Input.Password />
+          </Form.Item>
+
+          {errorMessage !== "" && (
+            <Typography.Text className="text-center block" type="danger">
+              {errorMessage}
+            </Typography.Text>
           )}
 
-          <input
-            type="email"
-            placeholder="Email"
-            className="border border-gray-300 p-2 rounded-md"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-          <input
-            type="password"
-            placeholder="Password"
-            className="border border-gray-300 p-2 rounded-md"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-          {isSigningUp && (
-            <input
-              type="password"
-              placeholder="Confirm Password"
-              className="border border-gray-300 p-2 rounded-md"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-            />
-          )}
-          <small className="text-red-500">{errorMessage}</small>
-          <button
-            type="submit"
-            className="bg-white text-green-500 border p-2 rounded-md"
+          <Form.Item<FieldType>
+            name="remember"
+            valuePropName="checked"
+            wrapperCol={{ offset: 8, span: 16 }}
           >
-            <Spin className="mr-3" spinning={loading} />
-            {isSigningUp ? "Sign Up" : "Login"}
-          </button>
-          <button
-            type="button"
-            className="text-blue-500 border-none p-2 rounded-md"
-            onClick={handleSwitchMode}
-          >
-            {isSigningUp ? "Login" : "Sign Up"}
-          </button>
-        </form>
+            <Checkbox>Ghi nhớ đăng nhập</Checkbox>
+          </Form.Item>
+
+          <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
+            <Button type="primary" htmlType="submit">
+              Xác nhận
+              {loading && (
+                <Spin
+                  indicator={
+                    <LoadingOutlined
+                      className="ml-2 text-white"
+                      style={{ fontSize: 18 }}
+                      spin
+                    />
+                  }
+                />
+              )}
+            </Button>
+          </Form.Item>
+        </Form>
       </div>
     </div>
   );

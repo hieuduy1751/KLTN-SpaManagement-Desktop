@@ -5,26 +5,13 @@ import {
   deleteUser,
   persistToken,
   readToken,
-} from "../../services/localStorage.service";
-import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../../firebase";
-import { isAdmin } from "../../services/admin.service";
+} from "../../services/localStorage";
+import { LoginRequest, RegisterRequest } from "../../types/authenticationTypes";
+import { login, register } from "../../services/authentication";
 
-export interface AuthSlice {
+export type AuthSlice = {
   token: string | null;
-}
-
-export interface LoginRequest {
-  email: string;
-  password: string;
-}
-
-export interface SignUpRequest {
-  email: string;
-  password: string;
-  confirmPassword: string;
-  username: string;
-}
+};
 
 const initialState: AuthSlice = {
   token: readToken(),
@@ -32,35 +19,40 @@ const initialState: AuthSlice = {
 
 export const doLogin = createAsyncThunk(
   "auth/doLogin",
-  (loginPayload: LoginRequest, { dispatch }) =>
-    signInWithEmailAndPassword(
-      auth,
-      loginPayload.email,
-      loginPayload.password
-    ).then(async (res) => {
-      const user = res.user;
-      if (await isAdmin(user.uid)) {
-        dispatch(setUser(res.user));
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-expect-error
-        persistToken(user?.accessToken);
-
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-expect-error
-        return user?.accessToken;
+  async (loginPayload: LoginRequest) => {
+    try {
+      const res = await login(loginPayload.username, loginPayload.password);
+      if (res?.status === 500) {
+        throw new Error(res.message)
       } else {
-        throw new Error("Your account is not admin")
+        if (res?.token) {
+          persistToken(res.token)
+          return res.token
+        }
+        return ''
       }
-    })
-);
-export const doLogout = createAsyncThunk(
-  "auth/doLogout",
-  (_,{ dispatch }) => {
-    deleteToken();
-    deleteUser();
-    dispatch(setUser(null));
+    } catch (err: any) {
+      throw new Error(err.message)
+    }
   }
 );
+
+export const doRegister = createAsyncThunk(
+  "auth/doRegister",
+  async (registerPayload: RegisterRequest) => {
+    const res = await register(
+      registerPayload.username,
+      registerPayload.password
+    );
+    console.log(res);
+  }
+);
+
+export const doLogout = createAsyncThunk("auth/doLogout", (_, { dispatch }) => {
+  deleteToken();
+  deleteUser();
+  dispatch(setUser(null));
+});
 
 const authSlice = createSlice({
   name: "auth",
