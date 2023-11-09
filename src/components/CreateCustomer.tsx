@@ -1,0 +1,247 @@
+import { LoadingOutlined, PlusOutlined } from "@ant-design/icons";
+import {
+  notification,
+  DatePicker,
+  Form,
+  Input,
+  Modal,
+  Radio,
+  Upload,
+  message,
+} from "antd";
+import { useState } from "react";
+import { useAppDispatch } from "../hooks/reduxHooks";
+import { addCustomer } from "../store/slices/customerSlice";
+import { CustomerType } from "../types/customer";
+import {
+  RcFile,
+  UploadChangeParam,
+  UploadFile,
+  UploadProps,
+} from "antd/es/upload";
+import { beforeUploadImg, getBase64, uploadImageService } from "../services/image";
+
+type NotificationType = "success" | "info" | "warning" | "error";
+
+export type CreateCustomerProps = {
+  modalOpen: boolean;
+  setModalOpen: any;
+};
+
+const { TextArea } = Input;
+
+const normFile = (e: any) => {
+  if (Array.isArray(e)) {
+    return e;
+  }
+  return e?.fileList;
+};
+
+export default function CreateCustomer({
+  modalOpen,
+  setModalOpen,
+}: CreateCustomerProps) {
+  const [form] = Form.useForm();
+  const dispatch = useAppDispatch();
+  const [loading, setLoading] = useState<boolean>(false);
+  const [loadingIMG, setLoadingIMG] = useState(false);
+  const [imageUrl, setImageUrl] = useState<string>();
+
+  const [api, contextHolder] = notification.useNotification();
+
+  const openNotificationWithIcon = (
+    type: NotificationType,
+    title,
+    description
+  ) => {
+    api[type]({
+      message: title,
+      description,
+    });
+  };
+
+  const validateMessages = {
+    required: "${label} không được để trống!",
+    types: {
+      email: "${label} không hợp lệ!",
+      number: "${label} không hợp lệ!",
+    },
+  };
+
+  const handleChange: UploadProps["onChange"] = (
+    info: UploadChangeParam<UploadFile>
+  ) => {
+    if (info.file.status === "uploading") {
+      setLoadingIMG(true);
+      return;
+    }
+    if (info.file.status === "done") {
+      // Get this url from response in real world.
+      getBase64(info.file.originFileObj as RcFile, (url) => {
+        setLoadingIMG(false);
+        setImageUrl(url);
+      });
+    }
+  };
+  const uploadImage = async (options) => {
+    const { onSuccess, onError, file, onProgress } = options;
+
+    const config = {
+      headers: { "content-type": "multipart/form-data" },
+      onUploadProgress: (event) => {
+        const percent = Math.floor((event.loaded / event.total) * 100);
+        setLoadingIMG(true);
+        if (percent === 100) {
+          setLoadingIMG(false);
+        }
+        onProgress({ percent: (event.loaded / event.total) * 100 });
+      },
+    };
+    try {
+      const res = await uploadImageService(file, config);
+      onSuccess("Ok");
+      setImageUrl(res);
+      form.setFieldValue("avatarUrl", res);
+    } catch (err) {
+      console.log("Eroor: ", err);
+      onError({ err });
+    }
+  };
+
+  const uploadButton = (
+    <div>
+      {loadingIMG ? <LoadingOutlined /> : <PlusOutlined />}
+      <div style={{ marginTop: 8 }}>Tải lên</div>
+    </div>
+  );
+
+  const handleOnCreate = () => {
+    if (form) {
+      form.submit();
+    }
+  };
+
+  const handleOnCancel = () => {
+    setModalOpen(false);
+    form.resetFields();
+    setImageUrl("");
+  };
+
+  const handleOnFinish = async (values: any) => {
+    const newCustomer: CustomerType = {
+      ...values,
+      customerClass: "NEW",
+    };
+    console.log(newCustomer);
+    setLoading(true);
+    try {
+      await dispatch(addCustomer(newCustomer));
+      setLoading(false);
+      setModalOpen(false);
+      openNotificationWithIcon(
+        "success",
+        "Thành công",
+        "Thêm khách hàng thành công!"
+      );
+      form.resetFields()
+      setImageUrl('')
+    } catch (err: any) {
+      openNotificationWithIcon("error", "Thất bại", err.message);
+    }
+  };
+
+  return (
+    <Modal
+      title="Tạo khách hàng mới"
+      centered
+      open={modalOpen}
+      onOk={handleOnCreate}
+      onCancel={handleOnCancel}
+      confirmLoading={loading}
+      width={500}
+      okText="Tạo khách hàng"
+      cancelText="Hủy bỏ"
+    >
+      {contextHolder}
+      <Form
+        labelCol={{ span: 8 }}
+        wrapperCol={{ span: 16 }}
+        layout="horizontal"
+        className="h-[60vh] overflow-auto px-3"
+        form={form}
+        onFinish={handleOnFinish}
+        validateMessages={validateMessages}
+      >
+        <Form.Item
+          label="Ảnh"
+          valuePropName="fileList"
+          getValueFromEvent={normFile}
+        >
+          <Upload
+            accept="image/*"
+            listType="picture-card"
+            className="avatar-uploader"
+            showUploadList={false}
+            customRequest={uploadImage}
+            beforeUpload={(file) => beforeUploadImg(file, message)}
+            onChange={handleChange}
+          >
+            {imageUrl ? (
+              <img src={imageUrl} alt="avatar" style={{ width: "150%" }} />
+            ) : (
+              uploadButton
+            )}
+          </Upload>
+        </Form.Item>
+        <Form.Item name="avatarUrl" hidden>
+          <Input />
+        </Form.Item>
+        <Form.Item name="lastName" rules={[{ required: true }]} label="Họ">
+          <Input />
+        </Form.Item>
+        <Form.Item name="firstName" rules={[{ required: true }]} label="Tên">
+          <Input />
+        </Form.Item>
+        <Form.Item
+          name="email"
+          rules={[{ required: true }, { type: "email" }]}
+          label="Email"
+        >
+          <Input type="email" />
+        </Form.Item>
+        <Form.Item
+          name="phoneNumber"
+          rules={[
+            { required: true },
+            {
+              pattern: /^(03|05|07|08|09)[0-9]{8}$/,
+              message: "Số điện thoại không hợp lệ",
+            },
+          ]}
+          label="Số điện thoại"
+        >
+          <Input />
+        </Form.Item>
+        <Form.Item name="gender" rules={[{ required: true }]} label="Giới tính">
+          <Radio.Group>
+            <Radio value="MALE"> Nam </Radio>
+            <Radio value="FEMALE"> Nữ </Radio>
+          </Radio.Group>
+        </Form.Item>
+        <Form.Item name="address" rules={[{ required: true }]} label="Địa chỉ">
+          <Input />
+        </Form.Item>
+        <Form.Item
+          name="birthDay"
+          rules={[{ required: true }]}
+          label="Ngày sinh"
+        >
+          <DatePicker format="DD/MM/YYYY" />
+        </Form.Item>
+        <Form.Item label="Ghi chú">
+          <TextArea rows={4} />
+        </Form.Item>
+      </Form>
+    </Modal>
+  );
+}
