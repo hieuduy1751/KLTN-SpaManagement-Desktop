@@ -19,6 +19,7 @@ import NewPostPage from "../pages/NewPostPage";
 import IncomingEventPage from "../pages/IncomingEventPage";
 import ServiceListPage from "../pages/ServiceListPage";
 import GoodsPage from "../pages/GoodsPage";
+import InvoicePage from "../pages/InvoicePage";
 
 export default function AppRouter() {
   const protectedLayout = (
@@ -39,6 +40,7 @@ export default function AppRouter() {
           <Route path="calendar" element={<CalendarPage />} />
           <Route path="service-list" element={<ServiceListPage />} />
           <Route path="goods" element={<GoodsPage />} />
+          <Route path="invoice" element={<InvoicePage />} />
           <Route path="customers" element={<CustomerListPage />} />
           <Route path="customer-service" element={<CustomerServicePage />} />
           <Route path="staffs" element={<StaffListPage />} />

@@ -1,13 +1,23 @@
 import { Breadcrumb } from "antd";
 import Sidebar from "../components/Sidebar";
-import { Outlet, useLocation } from "react-router-dom";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { HomeOutlined } from "@ant-design/icons";
 import { useEffect, useState } from "react";
 import PATH from "../constants/path";
+import { useAppDispatch } from "../hooks/reduxHooks";
+import { doLogout } from "../store/slices/authSlice";
 
 export default function MainLayout() {
   const location = useLocation();
   const [items, setItems] = useState<any>([]);
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    dispatch(doLogout())
+      .then(() => navigate("/auth/login"))
+      .catch((err) => console.log(err));
+  };
 
   useEffect(() => {
     if (location.pathname !== "/") {
@@ -29,7 +39,7 @@ export default function MainLayout() {
         <Sidebar />
       </div>
       <div className="w-[80%] h-[100vh]">
-        <div className="flex items-center p-5 shadow">
+        <div className="flex justify-between items-center p-5 shadow">
           <Breadcrumb
             items={[
               {
@@ -39,6 +49,9 @@ export default function MainLayout() {
               ...items,
             ]}
           />
+          <span onClick={handleLogout} className="text-red-500 font-bold cursor-pointer">
+            Đăng xuất
+          </span>
         </div>
         <div className="p-5 overflow-auto">
           <Outlet />

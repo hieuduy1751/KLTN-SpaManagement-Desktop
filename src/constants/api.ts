@@ -8,7 +8,10 @@ const API = {
   customer: 'customer',
   staff: 'admin/employee',
   image: 'image/upload',
-  product: 'product/'
+  product: 'product/',
+  appointment: 'appointment',
+  treatment: 'treatment-detail',
+  invoice: 'invoice'
 }
 
 export default API

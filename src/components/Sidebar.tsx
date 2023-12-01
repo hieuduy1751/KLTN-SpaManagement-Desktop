@@ -1,22 +1,18 @@
 import {
-  ArrowLeft,
   ArrowLeftRight,
-  ArrowRight,
   BadgePlus,
   Box,
-  CalendarClock,
   CalendarDays,
   FileText,
   Gauge,
-  MessagesSquare,
   Package,
   Package2,
+  Receipt,
   UserSquare,
   Users2,
 } from "lucide-react";
 import React from "react";
 import { useAppDispatch } from "../hooks/reduxHooks";
-import { doLogout } from "../store/slices/authSlice";
 import { useNavigate } from "react-router-dom";
 import { Menu, type MenuProps } from "antd";
 import spaLogo from "../assets/spa_logo.png";
@@ -46,16 +42,17 @@ export default function Sidebar() {
   const items: MenuItem[] = [
     getItem("Bảng thông tin", "dashboard", <Gauge />),
     getItem("Theo dõi liệu trình", "treatment-detail", <BadgePlus />),
-    getItem("Lịch", "calendar", <CalendarDays />),
+    getItem("Cuộc hẹn", "calendar", <CalendarDays />),
     getItem("Dịch vụ", "service-list", <Box />),
     getItem("Sản phẩm", "goods", <Package2 />),
+    getItem("Hóa đơn", "invoice", <Receipt />),
     getItem(
       "Khách hàng",
       "customer",
       null,
       [
         getItem("Danh sách khách hàng", "customer-list", <Users2 />),
-        getItem("Chăm sóc khách hàng", "customer-service", <MessagesSquare />),
+        // getItem("Chăm sóc khách hàng", "customer-service", <MessagesSquare />),
       ],
       "group"
     ),
@@ -66,23 +63,24 @@ export default function Sidebar() {
       [getItem("Danh sách nhân viên", "staff-list", <UserSquare />)],
       "group"
     ),
-    getItem(
-      "Kế toán",
-      "finance",
-      null,
-      [
-        getItem("Thu", "income", <ArrowRight color="green" />),
-        getItem("Chi", "pay", <ArrowLeft color="red" />),
-      ],
-      "group"
-    ),
+    // getItem(
+    //   "Kế toán",
+    //   "finance",
+    //   null,
+    //   [
+    //     getItem("Thu", "income", <ArrowRight color="green" />),
+    //     getItem("Chi", "pay", <ArrowLeft color="red" />),
+    //   ],
+    //   "group"
+    // ),
     getItem(
       "Thống kê/Báo cáo",
       "reports",
       null,
       [
-        getItem("Thu/Chi", "income-pay", <ArrowLeftRight />),
-        getItem("Dịch vụ", "service", <Package />),
+        getItem("Lợi nhuận", "revenue", <ArrowLeftRight />),
+        getItem("Top khách hàng", "top-customer", <Users2 />),
+        getItem("Top dịch vụ", "top-service", <Package />),
       ],
       "group"
     ),
@@ -92,17 +90,11 @@ export default function Sidebar() {
       null,
       [
         getItem("Bài đăng mới", "new-post", <FileText />),
-        getItem("Sự kiện sắp tới", "incoming-event", <CalendarClock />),
+        // getItem("Sự kiện sắp tới", "incoming-event", <CalendarClock />),
       ],
       "group"
     ),
   ];
-
-  const handleLogout = () => {
-    dispatch(doLogout())
-      .then(() => navigate("/auth/login"))
-      .catch((err) => console.log(err));
-  };
 
   const handleNavigate = ({ key }) => {
     switch (key) {
@@ -119,7 +111,10 @@ export default function Sidebar() {
         navigate("/home/customers");
         break;
       case "goods":
-        navigate("/home/goods")
+        navigate("/home/goods");
+        break;
+      case "invoice":
+        navigate("/home/invoice");
         break;
       case "customer-service":
         navigate("/home/customer-service");
@@ -169,11 +164,7 @@ export default function Sidebar() {
         />
       </div>
       <div>
-        <div className="gap-4 p-2 mb-3 rounded-md text-center cursor-pointer hover:bg-gray-300">
-          <span onClick={handleLogout} className="text-red-500 font-bold">
-            Đăng xuất
-          </span>
-        </div>
+        <div className="gap-4 p-2 mb-3 rounded-md text-center cursor-pointer hover:bg-gray-300"></div>
       </div>
     </div>
   );

@@ -49,3 +49,9 @@ export async function createStaffAccount(staffId: string, username: string, pass
   const res = await authAxiosInstance.post(path, payload)
   return res.data
 }
+
+export async function searchStaffByName(name: string) {
+  const path = `${API.apiPath}/${API.staff}/search?text=${name}`
+  const res = await authAxiosInstance.get(path)
+  return res.data
+}

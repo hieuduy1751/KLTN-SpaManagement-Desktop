@@ -1,7 +1,7 @@
 import { Button, Input, Space, Table } from "antd";
 import { SearchProps } from "antd/es/input";
 import { ColumnsType, TablePaginationConfig } from "antd/es/table";
-import { UserPlus2 } from "lucide-react";
+import { PackagePlus } from "lucide-react";
 import { useEffect, useState } from "react";
 import { PaginationType } from "../types/generalTypes";
 import { useAppDispatch, useAppSelector } from "../hooks/reduxHooks";
@@ -130,7 +130,7 @@ export default function GoodsPage() {
         <Button
           onClick={() => setCreateProductModalOpen(true)}
           className="ml-3 flex items-center"
-          icon={<UserPlus2 />}
+          icon={<PackagePlus />}
         >
           Thêm sản phẩm
         </Button>

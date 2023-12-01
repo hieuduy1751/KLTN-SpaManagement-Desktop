@@ -38,3 +38,9 @@ export async function deleteCustomer(customerId: string) {
   const res = await authAxiosInstance.delete(path);
   return res.data;
 }
+
+export async function searchCustomerByName(name: string) {
+  const path = `${API.apiPath}/${API.customer}/search?text=${name}`;
+  const res = await authAxiosInstance.get(path)
+  return res.data
+}

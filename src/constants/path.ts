@@ -9,7 +9,11 @@ const PATH = [
   },
   {
     path: 'calendar',
-    name: 'Lịch'
+    name: 'Cuộc hẹn'
+  },
+  {
+    path: 'invoice',
+    name: 'Hóa đơn'
   },
   {
     path: 'customers',

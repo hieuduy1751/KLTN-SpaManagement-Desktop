@@ -5,42 +5,44 @@ import { PackagePlus } from "lucide-react";
 import { useEffect, useState } from "react";
 import { PaginationType } from "../types/generalTypes";
 import { useAppDispatch, useAppSelector } from "../hooks/reduxHooks";
-import { ProductType } from "../types/product";
-import CreateProduct from "../components/CreateProduct";
-import ProductDetail from "../components/ProductDetail";
-import PRODUCT_TYPE from "../constants/product-type";
-import { getServices, setSelectedService, setServices } from "../store/slices/serviceSlice";
+import { InvoiceType } from "../types/invoice";
 
-export default function ServiceListPage() {
-  const [createProductModalOpen, setCreateProductModalOpen] =
-    useState<boolean>(false);
-  const [productDetailModalOpen, setProductDetailModalOpen] =
+export default function InvoicePage() {
+  const [invoiceDetailModalOpen, setInvoiceDetailModalOpen] =
     useState<boolean>(false);
   const dispatch = useAppDispatch();
-  const data = useAppSelector((state) => state.services.services);
-  const loading = useAppSelector((state) => state.services.loading);
+  const data = useAppSelector((state) => state.invoices.invoices);
+  const loading = useAppSelector((state) => state.invoices.loading);
   const tableParams: PaginationType = useAppSelector(
-    (state) => state.services.pagination
+    (state) => state.invoices.pagination
   );
-  const columns: ColumnsType<ProductType> = [
+  const columns: ColumnsType<InvoiceType> = [
     {
-      title: "Tên dịch vụ",
-      dataIndex: "name",
-      key: "name",
-      sorter: (a, b) => a.name.charCodeAt(0) - b.name.charCodeAt(0),
+      title: "Liệu trình",
+      dataIndex: "treatmentId",
+      key: "treatmentId",
+      sorter: (a, b) => a.treatmentId.charCodeAt(0) - b.name.charCodeAt(0),
     },
     {
       title: "Loại",
-      dataIndex: "productType",
-      key: "productType",
-      render: text => PRODUCT_TYPE[text],
-      sorter: (a, b) => a.productType.charCodeAt(0) - b.productType.charCodeAt(0),
+      dataIndex: "category",
+      key: "category",
+      render: text => PRODUCT_CATEGORY[text],
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      sorter: (a, b) => a.category?.charCodeAt(0) - b.category.charCodeAt(0),
     },
     {
       title: "Giá",
       dataIndex: "price",
       key: "price",
       sorter: (a, b) => a.price - b.price,
+    },
+    {
+      title: "Số lượng",
+      dataIndex: "quantity",
+      key: "quantity",
+      sorter: (a, b) => a.quantity - b.quantity,
     },
     {
       title: "Trạng thái",
@@ -60,7 +62,7 @@ export default function ServiceListPage() {
       key: "action",
       render: (_, record) => (
         <Space size="middle">
-          <Button onClick={() => handleServiceSelected(record)} type="primary">
+          <Button onClick={() => handleProductSelected(record)} type="primary">
             Xem
           </Button>
         </Space>
@@ -68,9 +70,9 @@ export default function ServiceListPage() {
     },
   ];
 
-  const handleServiceSelected = (service: ProductType) => {
-    dispatch(setSelectedService(service));
-    setProductDetailModalOpen(true);
+  const handleProductSelected = (product: ProductType) => {
+    dispatch(setSelectedProduct(product));
+    setInvoiceDetailModalOpen(true);
   };
 
   const onSearch: SearchProps["onSearch"] = (value, _e, info) =>
@@ -78,7 +80,7 @@ export default function ServiceListPage() {
 
   const fetchData = (params: PaginationType) => {
     try {
-      dispatch(getServices({
+      dispatch(getProducts({
         pagination: params
       }));
     } catch (err) {
@@ -102,7 +104,7 @@ export default function ServiceListPage() {
 
     // `dataSource` is useless since `pageSize` changed
     if (pagination.pageSize !== tableParams.pagination?.pageSize) {
-      dispatch(setServices([]));
+      dispatch(setProducts([]));
     }
   };
 
@@ -114,7 +116,7 @@ export default function ServiceListPage() {
     <div className="w-full h-full">
       <div className="flex items-center mb-3">
         <Input.Search
-          placeholder="Tìm kiếm dịch vụ"
+          placeholder="Tìm kiếm sản phẩm"
           allowClear
           onSearch={onSearch}
           className="w-72"
@@ -124,18 +126,18 @@ export default function ServiceListPage() {
           className="ml-3 flex items-center"
           icon={<PackagePlus />}
         >
-          Thêm dịch vụ
+          Thêm sản phẩm
         </Button>
       </div>
       <CreateProduct
         modalOpen={createProductModalOpen}
         setModalOpen={setCreateProductModalOpen}
-        productType="SERVICE"
+        productType="PRODUCT"
       />
       <ProductDetail
-        modalOpen={productDetailModalOpen}
-        setModalOpen={setProductDetailModalOpen}
-        productType="SERVICE"
+        modalOpen={invoiceDetailModalOpen}
+        setModalOpen={setInvoiceDetailModalOpen}
+        productType="PRODUCT"
       />
       <Table
         rowKey={(record) => record.id || record.name}
