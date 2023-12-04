@@ -12,12 +12,13 @@ export type InvoiceType = {
   employeeId: string
   customerId: string
   treatmentId: string
+  totalAmount?:number
   paymentMethod: string
   note: string
   dueDate: string
   key?: string
   id?: string
   status?: string
-  createdAt?: string
-  updatedAt?: string
+  createdDate?: string
+  updatedDate?: string
 }

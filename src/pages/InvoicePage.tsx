@@ -6,6 +6,14 @@ import { useEffect, useState } from "react";
 import { PaginationType } from "../types/generalTypes";
 import { useAppDispatch, useAppSelector } from "../hooks/reduxHooks";
 import { InvoiceType } from "../types/invoice";
+import {
+  getInvoices,
+  setInvoices,
+  setSelectedInvoice,
+} from "../store/slices/invoicesSlice";
+import InvoiceDetail from "../components/InvoiceDetail";
+import dayjs from "dayjs";
+import INVOICE_STATUS from "../constants/invoice-status";
 
 export default function InvoicePage() {
   const [invoiceDetailModalOpen, setInvoiceDetailModalOpen] =
@@ -18,51 +26,60 @@ export default function InvoicePage() {
   );
   const columns: ColumnsType<InvoiceType> = [
     {
-      title: "Liệu trình",
-      dataIndex: "treatmentId",
-      key: "treatmentId",
-      sorter: (a, b) => a.treatmentId.charCodeAt(0) - b.name.charCodeAt(0),
-    },
-    {
-      title: "Loại",
-      dataIndex: "category",
-      key: "category",
-      render: text => PRODUCT_CATEGORY[text],
+      title: "Hóa đơn số",
+      dataIndex: "id",
+      key: "id",
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      sorter: (a, b) => a.category?.charCodeAt(0) - b.category.charCodeAt(0),
+      // @ts-expect-error
+      sorter: (a, b) => a.id - b.id,
     },
     {
-      title: "Giá",
-      dataIndex: "price",
-      key: "price",
-      sorter: (a, b) => a.price - b.price,
+      title: "Khách hàng",
+      dataIndex: "customerResponse",
+      key: "customerResponse",
+      render: (text) => text.lastName + " " + text.firstName,
+      sorter: (a, b) =>
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-expect-error
+        a.customerResponse.firstName.charCodeAt(0) -
+        b.customerResponse.firstName.charCodeAt(0),
     },
     {
-      title: "Số lượng",
-      dataIndex: "quantity",
-      key: "quantity",
-      sorter: (a, b) => a.quantity - b.quantity,
+      title: "Ngày tạo",
+      dataIndex: "createdDate",
+      key: "createdDate",
+      render: (text) => dayjs(text).format("HH:mm DD/MM/YYYY"),
+      sorter: (a, b) =>
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-expect-error
+        a.createdDate.charCodeAt(0) - b.createdDate.charCodeAt(0),
     },
     {
       title: "Trạng thái",
       dataIndex: "status",
       key: "status",
-      render: text => text === 'ACTIVE' ? 'Hoạt động' : 'Không hoạt động',
+      render: (text) => INVOICE_STATUS[text],
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-expect-error
       sorter: (a, b) => a.status.charCodeAt(0) - b.status.charCodeAt(0),
     },
     {
-      title: "Mô tả",
-      key: "description",
-      dataIndex: "description",
-      render: (text) => (text.length > 20 ? text.slice(0, 20) + "..." : text),
+      title: "Ngày thanh toán",
+      dataIndex: "updatedDate",
+      key: "updatedDate",
+      render: (text, record) =>
+        record.status === "PAID" ? dayjs(text).format("HH:mm DD/MM/YYYY") : "",
+      sorter: (a, b) =>
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-expect-error
+        a.updatedDate.charCodeAt(0) - b.updatedDate.charCodeAt(0),
     },
     {
       title: "Tùy chọn",
       key: "action",
       render: (_, record) => (
         <Space size="middle">
-          <Button onClick={() => handleProductSelected(record)} type="primary">
+          <Button onClick={() => handleInvoiceSelected(record)} type="primary">
             Xem
           </Button>
         </Space>
@@ -70,8 +87,8 @@ export default function InvoicePage() {
     },
   ];
 
-  const handleProductSelected = (product: ProductType) => {
-    dispatch(setSelectedProduct(product));
+  const handleInvoiceSelected = (invoice: InvoiceType) => {
+    dispatch(setSelectedInvoice(invoice));
     setInvoiceDetailModalOpen(true);
   };
 
@@ -80,9 +97,11 @@ export default function InvoicePage() {
 
   const fetchData = (params: PaginationType) => {
     try {
-      dispatch(getProducts({
-        pagination: params
-      }));
+      dispatch(
+        getInvoices({
+          pagination: params,
+        })
+      );
     } catch (err) {
       console.log(err);
     }
@@ -104,7 +123,7 @@ export default function InvoicePage() {
 
     // `dataSource` is useless since `pageSize` changed
     if (pagination.pageSize !== tableParams.pagination?.pageSize) {
-      dispatch(setProducts([]));
+      dispatch(setInvoices([]));
     }
   };
 
@@ -116,31 +135,18 @@ export default function InvoicePage() {
     <div className="w-full h-full">
       <div className="flex items-center mb-3">
         <Input.Search
-          placeholder="Tìm kiếm sản phẩm"
+          placeholder="Tìm kiếm hóa đơn"
           allowClear
           onSearch={onSearch}
           className="w-72"
         />
-        <Button
-          onClick={() => setCreateProductModalOpen(true)}
-          className="ml-3 flex items-center"
-          icon={<PackagePlus />}
-        >
-          Thêm sản phẩm
-        </Button>
       </div>
-      <CreateProduct
-        modalOpen={createProductModalOpen}
-        setModalOpen={setCreateProductModalOpen}
-        productType="PRODUCT"
-      />
-      <ProductDetail
+      <InvoiceDetail
         modalOpen={invoiceDetailModalOpen}
         setModalOpen={setInvoiceDetailModalOpen}
-        productType="PRODUCT"
       />
       <Table
-        rowKey={(record) => record.id || record.name}
+        rowKey={(record) => record.id || record.dueDate}
         loading={loading}
         columns={columns}
         dataSource={data}

@@ -23,13 +23,13 @@ export default function ProductInInvoiceDetail({
           {product.name}
         </Typography.Text>
         <Typography.Text className="text-md block">
-          Đơn giá: {product.price}
+          Đơn giá: {product.price.toLocaleString()} VND
         </Typography.Text>
         <Typography.Text className="text-md block">
           Số lượng {totalQuantity}
         </Typography.Text>
         <Typography.Text className="text-md block">
-          Tổng: {totalPrice}
+          Tổng: {totalPrice.toLocaleString()} VND
         </Typography.Text>
       </div>
     </div>

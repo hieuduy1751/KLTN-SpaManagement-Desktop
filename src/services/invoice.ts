@@ -24,7 +24,7 @@ export async function getInvoices(pagination?: PaginationType) {
   return res.data;
 }
 
-export async function updateInvoice(invoice: InvoiceType, invoiceId: string) {
+export async function updateInvoice(invoice: any, invoiceId: string) {
   const path = `${API.apiPath}/${API.invoice}/${invoiceId}`;
   const res = await authAxiosInstance.put(path, invoice);
   return res.data;

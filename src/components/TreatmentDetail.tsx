@@ -1,7 +1,6 @@
 import {
   Button,
   Col,
-  DatePicker,
   Form,
   Image,
   Input,
@@ -33,6 +32,7 @@ import { RcFile, UploadChangeParam, UploadFile } from "antd/es/upload";
 import INVOICE_STATUS from "../constants/invoice-status";
 import ProductInInvoiceDetail from "./ProductInInvoiceDetail";
 import dayjs from "dayjs";
+import { updateInvoice } from "../services/invoice";
 
 export type TreatmentDetailProps = {
   modalOpen: boolean;
@@ -52,6 +52,7 @@ export default function TreatmentDetail({
   const [api, contextHolder] = notification.useNotification();
   const [loading, setLoading] = useState<boolean>(false);
   const [isDisabled, setIsDisabled] = useState<boolean>(true);
+  const [isPaid, setIsPaid] = useState<boolean>(false);
   const [loadingIMGBefore, setLoadingIMGBefore] = useState(false);
   const [imageBeforeUrl, setImageBeforeUrl] = useState<string>();
   const [loadingIMGCurrent, setLoadingIMGCurrent] = useState(false);
@@ -227,6 +228,35 @@ export default function TreatmentDetail({
     } catch (err) {
       console.log("Eroor: ", err);
       onError({ err });
+    }
+  };
+
+  const handleBillUpdate = async () => {
+    if (treatment?.invoiceResponse) {
+      const invoice = treatment.invoiceResponse;
+      const note = invoiceForm.getFieldValue("note");
+      const status = invoiceForm.getFieldValue("status");
+      const payload = {
+        dueDate: new Date(),
+        note,
+        paymentMethod: "CAST",
+        status,
+      };
+      try {
+        if (invoice && invoice.id) {
+          const res = await updateInvoice(payload, invoice.id);
+          if (res.id) {
+            api.success({
+              message: 'Cập nhật thành công',
+            });
+            if (status === 'PAID') {
+              setIsPaid(true)
+            }
+          }
+        }
+      } catch (err) {
+        console.log(err);
+      }
     }
   };
 
@@ -441,25 +471,24 @@ export default function TreatmentDetail({
               wrapperCol={{ span: 16 }}
               labelAlign="left"
               layout="horizontal"
-              className="h-[40vh] overflow-auto px-3"
+              className="h-[50vh] overflow-auto px-3"
               form={invoiceForm}
               validateMessages={validateMessages}
-              disabled
             >
               <Form.Item label="Ngày tạo" name="createdDate">
-                <Input />
+                <Input disabled />
               </Form.Item>
               <Form.Item label="Ngày cập nhật" name="updatedDate">
-                <Input />
+                <Input disabled />
               </Form.Item>
               <Form.Item label="Hóa đơn số" name="id">
-                <Input />
+                <Input disabled />
               </Form.Item>
               <Form.Item name="note" label="Ghi chú">
                 <TextArea />
               </Form.Item>
               <Form.Item name="totalAmount" label="Tổng tiền">
-                <Input />
+                <Input disabled />
               </Form.Item>
               <Form.Item
                 rules={[{ required: true }]}
@@ -467,20 +496,25 @@ export default function TreatmentDetail({
                 label="Trạng thái"
               >
                 <Select
-                  disabled={isDisabled}
+                  disabled={isPaid}
                   options={Object.keys(INVOICE_STATUS).map((k) => ({
                     value: k,
                     label: INVOICE_STATUS[k],
                   }))}
                 />
               </Form.Item>
+              <Form.Item>
+                <Button type="primary" onClick={handleBillUpdate}>
+                  Cập nhật
+                </Button>
+              </Form.Item>
             </Form>
           </Col>
-          <Col span={12}>
+          <Col span={12} className="flex flex-col justify-between">
             <Typography.Text className="font-bold px-3">
               Dịch vụ đã sử dụng
             </Typography.Text>
-            <div className="px-3">
+            <div className="px-3 grow">
               {treatment?.invoiceResponse?.invoiceDetailResponses?.map(
                 (invoiceDetail, index) => (
                   <ProductInInvoiceDetail
@@ -492,6 +526,7 @@ export default function TreatmentDetail({
                 )
               )}
             </div>
+            <Button>Tải hóa đơn</Button>
           </Col>
         </Row>
       ),
@@ -512,7 +547,7 @@ export default function TreatmentDetail({
           " " +
           treatment.employeeResponse?.firstName,
       });
-      
+
       setImageBeforeUrl(treatment.imageBefore);
       setImageCurrentUrl(treatment.imageCurrent);
       setimageResultUrl(treatment.imageResult);
@@ -520,7 +555,18 @@ export default function TreatmentDetail({
     if (invoiceForm && modalOpen && treatment) {
       invoiceForm.setFieldsValue({
         ...treatment.invoiceResponse,
-      })
+        createdDate: dayjs(treatment.invoiceResponse?.createdAt).format(
+          "HH:mm DD/MM/YYYY"
+        ),
+        updatedDate: dayjs(treatment.invoiceResponse?.createdAt).format(
+          "HH:mm DD/MM/YYYY"
+        ),
+        totalAmount:
+          treatment.invoiceResponse?.totalAmount?.toLocaleString() + "VND",
+      });
+      if (treatment.invoiceResponse?.status === 'PAID') {
+        setIsPaid(true)
+      }
     }
     if (!treatment) {
       setModalOpen(false);
