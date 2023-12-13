@@ -24,6 +24,10 @@ const PATH = [
     name: 'Chăm sóc khách hàng'
   },
   {
+    path: 'served-service',
+    name: 'Quản lý Liệu trình'
+  },
+  {
     path: 'staffs',
     name: 'Danh sách nhân viên'
   },
@@ -53,11 +57,15 @@ const PATH = [
   },
   {
     path: 'services',
-    name: 'Dịch vụ'
+    name: 'Danh sách Liệu trình'
   },
   {
     path: 'posts',
     name: 'Tin tức/sự kiện'
+  },
+  {
+    path: 'top-customer',
+    name: 'Top khách hàng'
   },
   {
     path: 'new-post',
@@ -69,7 +77,7 @@ const PATH = [
   },
   {
     path: 'service-list',
-    name: 'Danh sách dịch vụ'
+    name: 'Danh sách Liệu trình'
   }
 ]
 export default PATH

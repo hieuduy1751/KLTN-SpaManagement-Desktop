@@ -24,7 +24,7 @@ export default function ServiceListPage() {
   );
   const columns: ColumnsType<ProductType> = [
     {
-      title: "Tên dịch vụ",
+      title: "Tên Liệu trình",
       dataIndex: "name",
       key: "name",
       sorter: (a, b) => a.name.charCodeAt(0) - b.name.charCodeAt(0),
@@ -114,7 +114,7 @@ export default function ServiceListPage() {
     <div className="w-full h-full">
       <div className="flex items-center mb-3">
         <Input.Search
-          placeholder="Tìm kiếm dịch vụ"
+          placeholder="Tìm kiếm liệu trình & Liệu trình"
           allowClear
           onSearch={onSearch}
           className="w-72"
@@ -124,7 +124,7 @@ export default function ServiceListPage() {
           className="ml-3 flex items-center"
           icon={<PackagePlus />}
         >
-          Thêm dịch vụ
+          Thêm
         </Button>
       </div>
       <CreateProduct

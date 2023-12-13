@@ -171,7 +171,7 @@ export default function AppointmentDetail({
               <Form.Item
                 name="product"
                 rules={[{ required: true }]}
-                label="Dịch vụ"
+                label="Liệu trình"
               >
                 <Input disabled />
               </Form.Item>

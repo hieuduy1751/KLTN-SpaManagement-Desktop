@@ -33,8 +33,11 @@ export default function AppointmentListPage() {
       dataIndex: "time",
       key: "time",
       render: (text) =>
-        dayjs(text).subtract(7, "hours").format("HH:mm DD/MM/YYYY"),
-      sorter: (a, b) => a.time.charCodeAt(0) - b.time.charCodeAt(0),
+        dayjs(text).subtract(14, "hours").format("HH:mm DD/MM/YYYY"),
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-expect-error
+      sorter: (a, b) => dayjs(a.time).isBefore(dayjs(b.time)),
+      defaultSortOrder: 'descend'
     },
     {
       title: "Trạng thái",
@@ -51,7 +54,7 @@ export default function AppointmentListPage() {
       sorter: (a, b) => a.note.charCodeAt(0) - b.note.charCodeAt(0),
     },
     {
-      title: "Dịch vụ",
+      title: "Liệu trình",
       dataIndex: "reference",
       key: "referenceProduct",
       render: (record) => record.productName,

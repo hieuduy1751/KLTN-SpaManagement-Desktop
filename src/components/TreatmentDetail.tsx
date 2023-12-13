@@ -37,18 +37,24 @@ import { updateInvoice } from "../services/invoice";
 export type TreatmentDetailProps = {
   modalOpen: boolean;
   setModalOpen: any;
+  type: string;
 };
 
 export default function TreatmentDetail({
   modalOpen,
   setModalOpen,
+  type = "TREATMENT",
 }: TreatmentDetailProps) {
   const [form] = Form.useForm();
   const [invoiceForm] = Form.useForm();
   const dispatch = useAppDispatch();
-  const treatment = useAppSelector(
-    (state) => state.treatments.selectedTreatment
-  );
+  const treatment = useAppSelector((state) => {
+    if (type === "TREATMENT") {
+      return state.treatments.selectedTreatment;
+    } else {
+      return state.servedServices.selectedService;
+    }
+  });
   const [api, contextHolder] = notification.useNotification();
   const [loading, setLoading] = useState<boolean>(false);
   const [isDisabled, setIsDisabled] = useState<boolean>(true);
@@ -92,7 +98,9 @@ export default function TreatmentDetail({
       );
       api.success({
         message: "Thành công",
-        description: `Cập nhật liệu trình thành công!`,
+        description: `Cập nhật ${
+          type === "TREATMENT" ? "liệu trình" : "Liệu trình"
+        } thành công!`,
       });
       setIsDisabled(true);
     } catch (err: any) {
@@ -247,10 +255,10 @@ export default function TreatmentDetail({
           const res = await updateInvoice(payload, invoice.id);
           if (res.id) {
             api.success({
-              message: 'Cập nhật thành công',
+              message: "Cập nhật thành công",
             });
-            if (status === 'PAID') {
-              setIsPaid(true)
+            if (status === "PAID") {
+              setIsPaid(true);
             }
           }
         }
@@ -266,7 +274,7 @@ export default function TreatmentDetail({
       label: (
         <span className="flex items-center">
           <CalendarDays />
-          Thông tin liệu trình
+          Thông tin {type === 'TREATMENT' ? 'liệu trình' : 'Liệu trình'}
         </span>
       ),
       children: (
@@ -307,7 +315,7 @@ export default function TreatmentDetail({
               <Form.Item
                 name="product"
                 rules={[{ required: true }]}
-                label="Dịch vụ"
+                label={`${type === 'TREATMENT' ? 'liệu trình' : 'Liệu trình'}`}
               >
                 <Input disabled />
               </Form.Item>
@@ -378,13 +386,13 @@ export default function TreatmentDetail({
     },
     {
       key: "progress",
-      label: (
+      label: type === 'TREATMENT' && (
         <span className="flex items-center">
           <BookImage />
           Xem hình ảnh liệu trình
         </span>
       ),
-      children: (
+      children: type === "TREATMENT" && (
         <Row>
           <Col span={8}>
             <Typography.Text>Trước</Typography.Text>
@@ -512,7 +520,7 @@ export default function TreatmentDetail({
           </Col>
           <Col span={12} className="flex flex-col justify-between">
             <Typography.Text className="font-bold px-3">
-              Dịch vụ đã sử dụng
+              {type === 'TREATMENT' ? 'liệu trình' : 'Liệu trình'} đã sử dụng
             </Typography.Text>
             <div className="px-3 grow">
               {treatment?.invoiceResponse?.invoiceDetailResponses?.map(
@@ -548,9 +556,11 @@ export default function TreatmentDetail({
           treatment.employeeResponse?.firstName,
       });
 
-      setImageBeforeUrl(treatment.imageBefore);
-      setImageCurrentUrl(treatment.imageCurrent);
-      setimageResultUrl(treatment.imageResult);
+      if (type === "TREATMENT") {
+        setImageBeforeUrl(treatment.imageBefore);
+        setImageCurrentUrl(treatment.imageCurrent);
+        setimageResultUrl(treatment.imageResult);
+      }
     }
     if (invoiceForm && modalOpen && treatment) {
       invoiceForm.setFieldsValue({
@@ -564,8 +574,8 @@ export default function TreatmentDetail({
         totalAmount:
           treatment.invoiceResponse?.totalAmount?.toLocaleString() + "VND",
       });
-      if (treatment.invoiceResponse?.status === 'PAID') {
-        setIsPaid(true)
+      if (treatment.invoiceResponse?.status === "PAID") {
+        setIsPaid(true);
       }
     }
     if (!treatment) {
@@ -575,7 +585,7 @@ export default function TreatmentDetail({
 
   return (
     <Modal
-      title={`Thông tin liệu trình`}
+      title={`Thông tin ${type === "TREATMENT" ? "liệu trình" : "Liệu trình"}`}
       centered
       open={modalOpen}
       onCancel={handleOnCancel}

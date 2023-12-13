@@ -156,7 +156,7 @@ export default function InvoiceDetail({
           </Col>
           <Col span={12} className="flex flex-col justify-between">
             <Typography.Text className="font-bold px-3">
-              Dịch vụ đã sử dụng
+              Liệu trình đã sử dụng
             </Typography.Text>
             <div className="px-3 grow">
               {invoice?.invoiceDetailResponses?.map((invoiceDetail, index) => (

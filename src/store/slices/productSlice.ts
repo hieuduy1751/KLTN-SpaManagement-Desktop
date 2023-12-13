@@ -23,7 +23,7 @@ const initialState: ProductState = {
     pagination: {
       current: 1,
       pageSize: 10,
-      total: 10,
+      total: 50,
     },
   },
 };
@@ -62,7 +62,7 @@ export const addProduct = createAsyncThunk(
           pagination: {
             current: 1,
             pageSize: 10,
-            total: 0,
+            total: 50,
           },
         },
       })

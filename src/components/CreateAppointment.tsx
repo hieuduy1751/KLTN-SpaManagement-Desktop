@@ -116,8 +116,8 @@ export default function CreateAppointment({
         <Form.Item name="idCustomer" rules={[{ required: true }]} label="Khách hàng">
           <CustomerSearchInput value={idCustomer} onChange={setIdCustomer} placeholder="Chọn khách hàng" />
         </Form.Item>
-        <Form.Item name="idProduct" rules={[{ required: true }]} label="Dịch vụ">
-          <ServiceSearchInput value={idProduct} onChange={setIdProduct} placeholder="Chọn dịch vụ" />
+        <Form.Item name="idProduct" rules={[{ required: true }]} label="Liệu trình">
+          <ServiceSearchInput value={idProduct} onChange={setIdProduct} placeholder="Chọn Liệu trình" />
         </Form.Item>
         <Form.Item name="time" rules={[{ required: true }]} label="Thời gian">
           <AppointmentDatePicker disabled={false} value={time} onChange={setTime} placeholder="Chọn ngày giờ" />

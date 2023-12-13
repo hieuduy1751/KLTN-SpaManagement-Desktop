@@ -316,7 +316,7 @@ export default function CustomerDetail({
       label: (
         <span className="flex items-center">
           <BadgePlus />
-          Lịch sử sử dụng dịch vụ
+          Lịch sử sử dụng Liệu trình
         </span>
       ),
       children: (

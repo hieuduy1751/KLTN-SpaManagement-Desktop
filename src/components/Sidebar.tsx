@@ -41,9 +41,10 @@ export default function Sidebar() {
 
   const items: MenuItem[] = [
     getItem("Bảng thông tin", "dashboard", <Gauge />),
+    // getItem("Quản lý đặt Liệu trình", "served-service", <Box />),
     getItem("Theo dõi liệu trình", "treatment-detail", <BadgePlus />),
     getItem("Cuộc hẹn", "calendar", <CalendarDays />),
-    getItem("Dịch vụ", "service-list", <Box />),
+    getItem("Liệu trình", "service-list", <Box />),
     getItem("Sản phẩm", "goods", <Package2 />),
     getItem("Hóa đơn", "invoice", <Receipt />),
     getItem(
@@ -80,7 +81,7 @@ export default function Sidebar() {
       [
         getItem("Lợi nhuận", "revenue", <ArrowLeftRight />),
         getItem("Top khách hàng", "top-customer", <Users2 />),
-        getItem("Top dịch vụ", "top-service", <Package />),
+        getItem("Top Liệu trình", "top-service", <Package />),
       ],
       "group"
     ),
@@ -142,6 +143,12 @@ export default function Sidebar() {
         break;
       case "service-list":
         navigate("/home/service-list");
+        break;
+      case "top-customer":
+        navigate("/home/top-customer");
+        break;
+      case "served-service":
+        navigate("/home/served-service");
         break;
 
       default:

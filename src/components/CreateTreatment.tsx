@@ -15,11 +15,13 @@ type NotificationType = "success" | "info" | "warning" | "error";
 export type CreateTreatmentProps = {
   modalOpen: boolean;
   setModalOpen: any;
+  type: string
 };
 
 export default function CreateTreatment({
   modalOpen,
   setModalOpen,
+  type = 'TREATMENT'
 }: CreateTreatmentProps) {
   const [form] = Form.useForm();
   const dispatch = useAppDispatch();
@@ -75,7 +77,7 @@ export default function CreateTreatment({
       openNotificationWithIcon(
         "success",
         "Thành công",
-        "Tạo liệu trình thành công!"
+        `Tạo ${type === 'TREATMENT' ? 'liệu trình' : 'Liệu trình'} thành công!`
       );
       form.resetFields();
     } catch (err: any) {
@@ -85,14 +87,14 @@ export default function CreateTreatment({
 
   return (
     <Modal
-      title="Tạo liệu trình mới"
+      title={`Tạo ${type === 'TREATMENT' ? 'liệu trình' : 'Liệu trình'} mới`}
       centered
       open={modalOpen}
       onOk={handleOnCreate}
       onCancel={handleOnCancel}
       confirmLoading={loading}
       width={500}
-      okText="Tạo liệu trình"
+      okText={`Tạo ${type === 'TREATMENT' ? 'liệu trình' : 'Liệu trình'}`}
       cancelText="Hủy bỏ"
     >
       <CreateCustomer
@@ -145,12 +147,12 @@ export default function CreateTreatment({
         <Form.Item
           name="idProduct"
           rules={[{ required: true }]}
-          label="Dịch vụ"
+          label={`${type === 'TREATMENT' ? 'liệu trình' : 'Liệu trình'}`}
         >
           <ServiceSearchInput
             value={idProduct}
             onChange={setIdProduct}
-            placeholder="Chọn dịch vụ"
+            placeholder={`Chọn ${type === 'TREATMENT' ? 'liệu trình' : 'Liệu trình'}`}
           />
         </Form.Item>
         <Form.Item name="note" label="Ghi chú">

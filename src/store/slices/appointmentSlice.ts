@@ -23,7 +23,7 @@ const initialState: AppointmentState = {
     pagination: {
       current: 1,
       pageSize: 10,
-      total: 10,
+      total: 50,
     },
   },
 };
@@ -58,7 +58,7 @@ export const addAppointment = createAsyncThunk(
           pagination: {
             current: 1,
             pageSize: 10,
-            total: 0,
+            total: 50,
           },
         },
       })

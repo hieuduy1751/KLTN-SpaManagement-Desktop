@@ -23,7 +23,7 @@ const initialState: ServiceState = {
     pagination: {
       current: 1,
       pageSize: 10,
-      total: 10,
+      total: 50,
     },
   },
 };
@@ -62,7 +62,7 @@ export const addService = createAsyncThunk(
           pagination: {
             current: 1,
             pageSize: 10,
-            total: 0,
+            total: 50,
           },
         },
       })

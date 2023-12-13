@@ -8,6 +8,7 @@ import productsSlice from "./productSlice";
 import appointmentsSlice from "./appointmentSlice";
 import treatmentsSlice from "./treatmentSlice";
 import invoicesSlice from './invoicesSlice'
+import servedServicesSlice from "./servedServiceSlice";
 
 export default {
   user: userReducer,
@@ -19,5 +20,6 @@ export default {
   products: productsSlice,
   appointments: appointmentsSlice,
   treatments: treatmentsSlice,
-  invoices: invoicesSlice
+  invoices: invoicesSlice,
+  servedServices: servedServicesSlice
 };

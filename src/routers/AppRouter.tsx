@@ -20,6 +20,8 @@ import IncomingEventPage from "../pages/IncomingEventPage";
 import ServiceListPage from "../pages/ServiceListPage";
 import GoodsPage from "../pages/GoodsPage";
 import InvoicePage from "../pages/InvoicePage";
+import TopCustomer from "../pages/TopCustomer";
+import ServedService from "../pages/ServedService";
 
 export default function AppRouter() {
   const protectedLayout = (
@@ -43,6 +45,8 @@ export default function AppRouter() {
           <Route path="invoice" element={<InvoicePage />} />
           <Route path="customers" element={<CustomerListPage />} />
           <Route path="customer-service" element={<CustomerServicePage />} />
+          <Route path="top-customer" element={<TopCustomer />} />
+          <Route path="served-service" element={<ServedService />} />
           <Route path="staffs" element={<StaffListPage />} />
           <Route path="finance">
             <Route path="income" element={<IncomePage />} />

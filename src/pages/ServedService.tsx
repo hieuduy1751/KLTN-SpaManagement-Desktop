@@ -6,26 +6,22 @@ import { useEffect, useState } from "react";
 import { PaginationType } from "../types/generalTypes";
 import { useAppDispatch, useAppSelector } from "../hooks/reduxHooks";
 import { TreatmentType } from "../types/treatment";
-import {
-  getTreatments,
-  setSelectedTreatment,
-  setTreatments,
-} from "../store/slices/treatmentSlice";
 import CreateTreatment from "../components/CreateTreatment";
 import TreatmentDetail from "../components/TreatmentDetail";
 import TREATMENT_STATUS from "../constants/treatment-status";
 import dayjs from "dayjs";
+import { getServedServices, setSelectedServedService, setServedServices } from "../store/slices/servedServiceSlice";
 
-export default function TreatmentPage() {
+export default function ServedService() {
   const [createTreatmentModalOpen, setCreateTreatmentModalOpen] =
     useState<boolean>(false);
   const [treatmentDetailModalOpen, setTreatmentDetailModalOpen] =
     useState<boolean>(false);
   const dispatch = useAppDispatch();
-  const data = useAppSelector((state) => state.treatments.treatments);
-  const loading = useAppSelector((state) => state.treatments.loading);
+  const data = useAppSelector((state) => state.servedServices.services);
+  const loading = useAppSelector((state) => state.servedServices.loading);
   const tableParams: PaginationType = useAppSelector(
-    (state) => state.treatments.pagination
+    (state) => state.servedServices.pagination
   );
   const columns: ColumnsType<TreatmentType> = [
     {
@@ -111,7 +107,7 @@ export default function TreatmentPage() {
   ];
 
   const handleTreatmentSelected = (treatment: TreatmentType) => {
-    dispatch(setSelectedTreatment(treatment));
+    dispatch(setSelectedServedService(treatment));
     setTreatmentDetailModalOpen(true);
   };
 
@@ -121,7 +117,7 @@ export default function TreatmentPage() {
   const fetchData = (params: PaginationType) => {
     try {
       dispatch(
-        getTreatments({
+        getServedServices({
           pagination: params,
         })
       );
@@ -146,7 +142,7 @@ export default function TreatmentPage() {
 
     // `dataSource` is useless since `pageSize` changed
     if (pagination.pageSize !== tableParams.pagination?.pageSize) {
-      dispatch(setTreatments([]));
+      dispatch(setServedServices([]));
     }
   };
 
@@ -158,7 +154,7 @@ export default function TreatmentPage() {
     <div className="w-full h-full">
       <div className="flex items-center mb-3">
         <Input.Search
-          placeholder="Tìm kiếm liệu trình"
+          placeholder="Tìm kiếm Liệu trình"
           allowClear
           onSearch={onSearch}
           className="w-72"
@@ -168,16 +164,18 @@ export default function TreatmentPage() {
           className="ml-3 flex items-center"
           icon={<PackagePlus />}
         >
-          Tạo liệu trình
+          Tạo
         </Button>
       </div>
       <CreateTreatment
         modalOpen={createTreatmentModalOpen}
         setModalOpen={setCreateTreatmentModalOpen}
+        type="SERVICE"
       />
       <TreatmentDetail
         modalOpen={treatmentDetailModalOpen}
         setModalOpen={setTreatmentDetailModalOpen}
+        type="SERVICE"
       />
       <Table
         rowKey={(record) => record.id || ""}

@@ -206,7 +206,7 @@ export default function CreateProduct({
         <Form.Item
           name="name"
           rules={[{ required: true }]}
-          label="Tên sản phẩm"
+          label="Tên"
         >
           <Input />
         </Form.Item>
